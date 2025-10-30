@@ -1,15 +1,20 @@
 # -----------------------------
 # Stage 1 - Build React client
 # -----------------------------
-FROM node:18 as build
+FROM node:18 AS build
 WORKDIR /usr/src/app
 
-# Copy frontend package files
+# ✅ Fix OpenSSL issue for Node 17+
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
+# Copy and install frontend dependencies
 COPY client/package*.json ./client/
 RUN cd client && npm install
 
-# Copy entire project and build frontend
+# Copy all source code
 COPY . .
+
+# Build React frontend
 RUN cd client && npm run build
 
 # -----------------------------
@@ -18,23 +23,27 @@ RUN cd client && npm run build
 FROM node:18
 WORKDIR /usr/src/app
 
-# Copy backend package.json and install dependencies
+# Copy backend package.json and install production dependencies
 COPY package*.json ./
 RUN npm install --production
 
-# Copy all project files
+# Copy entire project
 COPY . .
 
-# Copy built frontend from previous stage
+# Copy prebuilt frontend from build stage
 COPY --from=build /usr/src/app/client/build ./client/build
 
-# Expose backend port
-EXPOSE 5000
-
-# Environment variables (will be overridden by ECS)
+# -----------------------------
+# Environment & Runtime Config
+# -----------------------------
 ENV NODE_ENV=production
 ENV PORT=5000
+# ⚠️ Hardcoded only for demo — ECS overrides these via task definition
 ENV MONGO_URI=mongodb://mongodb:27017/devconnector
 ENV JWT_SECRET=supersecretkey
 
+# Expose backend API port
+EXPOSE 5000
+
+# Start server
 CMD ["npm", "start"]
