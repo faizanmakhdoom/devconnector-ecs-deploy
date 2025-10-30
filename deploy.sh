@@ -13,6 +13,22 @@ aws ecs register-task-definition \
     "networkMode": "bridge",
     "executionRoleArn": "arn:aws:iam::623653226560:role/ecsTaskExecutionRole",
     "containerDefinitions": [
+
+        {
+      "name": "mongodb",
+      "image": "mongo:6.0",
+      "essential": false,
+      "memory": 512,
+      "portMappings": [
+        { "containerPort": 27017, "hostPort": 27017 }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "mongo-data",
+          "containerPath": "/data/db"
+        }
+      ]
+    },
       {
         "name": "devconnector",
         "image": "623653226560.dkr.ecr.us-east-1.amazonaws.com/devconnector:latest",
