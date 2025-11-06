@@ -1,73 +1,86 @@
 #!/bin/bash
 set -e
 
-echo "=== Starting ECS Task Registration and Deployment ==="
+echo ">>> Running DevConnector ECS Deployment Script"
 
-echo "=== Registering ECS Task Definition ==="
+# 🔧 Configuration (hardcoded)
+AWS_REGION="us-east-1"
+ECS_CLUSTER="devconnector"
+SERVICE_NAME="devconnector-task-service"
+TASK_DEFINITION_FAMILY="devconnector-task"
 
-aws ecs register-task-definition \
-  --region us-east-1 \
-  --cli-input-json '{
+
+# === 🧱 Define ECS Task Definition JSON ===
+NEW_TASK_DEFINITION=$(cat <<JSON
+{
   "family": "devconnector-task",
-  "networkMode": "awsvpc",
+  "networkMode": "bridge",
   "requiresCompatibilities": ["EC2"],
-  "executionRoleArn": "arn:aws:iam::623653226560:role/ecsTaskExecutionRole",
+  "cpu": "512",
+  "memory": "1024",
   "containerDefinitions": [
     {
-      "name": "mongodb",
-      "image": "mongo:6.0",
-      "essential": false,
-      "memory": 512,
+      "name": "devconnector-frontend",
+      "image": "623653226560.dkr.ecr.us-east-1.amazonaws.com/devconnector/frontend:latest",
+      "memoryReservation": 256,
       "portMappings": [
-        { "containerPort": 27017, "hostPort": 27017 }
-      ],
-      "mountPoints": [
         {
-          "sourceVolume": "mongo_data_volume",
-          "containerPath": "/data/db"
+          "containerPort": 80,
+          "hostPort": 80
         }
-      ]
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/devconnector-task",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "frontend"
+        }
+      }
     },
     {
-      "name": "devconnector",
-      "image": "623653226560.dkr.ecr.us-east-1.amazonaws.com/devconnector:latest",
-      "essential": true,
-      "memory": 512,
+      "name": "devconnector-backend",
+      "image": "623653226560.dkr.ecr.us-east-1.amazonaws.com/devconnector/backend:latest",
+      "memoryReservation": 512,
       "portMappings": [
-        { "containerPort": 5000, "hostPort": 5000 }
+        {
+          "containerPort": 5000,
+          "hostPort": 5000
+        }
       ],
       "environment": [
-        { "name": "NODE_ENV", "value": "production" },
-        { "name": "JWT_SECRET", "value": "supersecretkey" },
-        { "name": "MONGO_URI", "value": "mongodb://mongodb:27017/devconnector" }
+        { "name": "PORT", "value": "5000" },
+        { "name": "MONGO_URI", "value": "mongodb://admin:admin123@54.234.64.158:27017/devconnector?authSource=admin" },
+        { "name": "JWT_SECRET", "value": "superSecretKey123" }
       ],
-      "dependsOn": [
-        {
-          "containerName": "mongodb",
-          "condition": "START"
+      "essential": false,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/devconnector-task",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "backend"
         }
-      ]
-    }
-  ],
-  "volumes": [
-    {
-      "name": "mongo_data_volume",
-      "host": {
-        "sourcePath": "/var/lib/docker/volumes/mongo_data"
       }
     }
   ]
-}'
+}
+JSON
+)
 
-echo "=== Task Definition Registered Successfully ==="
+# === 🪣 Register the new Task Definition ===
+echo ">>> Registering ECS Task Definition..."
+aws ecs register-task-definition \
+  --cli-input-json "$NEW_TASK_DEFINITION" \
+  --region $AWS_REGION
 
-echo "=== Updating ECS Service to Use New Task Definition ==="
-
+# === 🚀 Force ECS Service to use new Task Definition ===
+echo ">>> Updating ECS Service to deploy new task..."
 aws ecs update-service \
-  --cluster devconnector-cluster \
-  --service devconnector-service \
+  --cluster "$ECS_CLUSTER" \
+  --service "$SERVICE_NAME" \
   --force-new-deployment \
-  --region us-east-1
+  --region "$AWS_REGION"
 
-echo "=== ECS Service Updated Successfully ==="
-echo "=== Deployment Completed Successfully ==="
+echo "✅ Deployment completed successfully!"
