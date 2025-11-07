@@ -9,9 +9,8 @@ ECS_CLUSTER="devconnector"
 SERVICE_NAME="devconnector-task-service"
 TASK_DEFINITION_FAMILY="devconnector-task"
 
-
 # === 🧱 Define ECS Task Definition JSON ===
-NEW_TASK_DEF=$(cat <<JSON
+NEW_TASK_DEF=$(cat <<'JSON'
 {
   "family": "devconnector-task",
   "networkMode": "bridge",
@@ -57,12 +56,13 @@ NEW_TASK_DEF=$(cat <<JSON
   ]
 }
 JSON
+)
 
 # === 🪣 Register the new Task Definition ===
 echo ">>> Registering ECS Task Definition..."
 aws ecs register-task-definition \
-  --cli-input-json "$NEW_TASK_DEFINITION" \
-  --region $AWS_REGION
+  --cli-input-json "$NEW_TASK_DEF" \
+  --region "$AWS_REGION"
 
 # === 🚀 Force ECS Service to use new Task Definition ===
 echo ">>> Updating ECS Service to deploy new task..."
