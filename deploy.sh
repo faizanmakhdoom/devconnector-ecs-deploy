@@ -22,6 +22,7 @@ NEW_TASK_DEF=$(cat <<'JSON'
       "portMappings": [
         { "containerPort": 80, "hostPort": 3000 }
       ],
+      "memoryReservation": 128,
       "essential": false,
       "logConfiguration": {
         "logDriver": "awslogs",
@@ -43,6 +44,7 @@ NEW_TASK_DEF=$(cat <<'JSON'
         { "name": "MONGO_URI", "value": "mongodb://admin:admin123@54.234.64.158:27017/devconnector?authSource=admin" },
         { "name": "JWT_SECRET", "value": "superSecretKey123" }
       ],
+       "memoryReservation": 256,
       "essential": true,
       "logConfiguration": {
         "logDriver": "awslogs",
