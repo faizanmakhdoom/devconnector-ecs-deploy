@@ -17,7 +17,7 @@ NEW_TASK_DEFINITION=$(cat <<JSON
   "networkMode": "bridge",
   "requiresCompatibilities": ["EC2"],
   "cpu": "512",
-  "memory": "512",
+  "memory": "1024",
   "containerDefinitions": [
     {
       "name": "devconnector-frontend",
@@ -43,8 +43,8 @@ NEW_TASK_DEFINITION=$(cat <<JSON
     {
       "name": "devconnector-backend",
       "image": "623653226560.dkr.ecr.us-east-1.amazonaws.com/devconnector/backend:latest",
-      "cpu": 256,
-      "memoryReservation": 256,
+      "cpu": 384,
+      "memoryReservation": 384,
       "portMappings": [
         {
           "containerPort": 5000,
