@@ -27,7 +27,7 @@ NEW_TASK_DEFINITION=$(cat <<JSON
       "portMappings": [
         {
           "containerPort": 80,
-          "hostPort": 80
+          "hostPort": 3000
         }
       ],
       "essential": false,
