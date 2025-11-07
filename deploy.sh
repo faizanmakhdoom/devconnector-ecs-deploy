@@ -11,24 +11,17 @@ TASK_DEFINITION_FAMILY="devconnector-task"
 
 
 # === 🧱 Define ECS Task Definition JSON ===
-NEW_TASK_DEFINITION=$(cat <<JSON
+NEW_TASK_DEF=$(cat <<JSON
 {
   "family": "devconnector-task",
   "networkMode": "bridge",
   "requiresCompatibilities": ["EC2"],
-  "cpu": "512",
-  "memory": "1024",
   "containerDefinitions": [
     {
       "name": "devconnector-frontend",
       "image": "623653226560.dkr.ecr.us-east-1.amazonaws.com/devconnector/frontend:latest",
-      "cpu": 128,
-      "memoryReservation": 128,
       "portMappings": [
-        {
-          "containerPort": 80,
-          "hostPort": 3000
-        }
+        { "containerPort": 80, "hostPort": 3000 }
       ],
       "essential": false,
       "logConfiguration": {
@@ -43,13 +36,8 @@ NEW_TASK_DEFINITION=$(cat <<JSON
     {
       "name": "devconnector-backend",
       "image": "623653226560.dkr.ecr.us-east-1.amazonaws.com/devconnector/backend:latest",
-      "cpu": 384,
-      "memoryReservation": 384,
       "portMappings": [
-        {
-          "containerPort": 5000,
-          "hostPort": 5000
-        }
+        { "containerPort": 5000, "hostPort": 5000 }
       ],
       "environment": [
         { "name": "PORT", "value": "5000" },
