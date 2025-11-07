@@ -17,19 +17,20 @@ NEW_TASK_DEFINITION=$(cat <<JSON
   "networkMode": "bridge",
   "requiresCompatibilities": ["EC2"],
   "cpu": "512",
-  "memory": "1024",
+  "memory": "512",
   "containerDefinitions": [
     {
       "name": "devconnector-frontend",
       "image": "623653226560.dkr.ecr.us-east-1.amazonaws.com/devconnector/frontend:latest",
-      "memoryReservation": 256,
+      "cpu": 128,
+      "memoryReservation": 128,
       "portMappings": [
         {
           "containerPort": 80,
           "hostPort": 80
         }
       ],
-      "essential": true,
+      "essential": false,
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
@@ -42,7 +43,8 @@ NEW_TASK_DEFINITION=$(cat <<JSON
     {
       "name": "devconnector-backend",
       "image": "623653226560.dkr.ecr.us-east-1.amazonaws.com/devconnector/backend:latest",
-      "memoryReservation": 512,
+      "cpu": 256,
+      "memoryReservation": 256,
       "portMappings": [
         {
           "containerPort": 5000,
@@ -54,7 +56,7 @@ NEW_TASK_DEFINITION=$(cat <<JSON
         { "name": "MONGO_URI", "value": "mongodb://admin:admin123@54.234.64.158:27017/devconnector?authSource=admin" },
         { "name": "JWT_SECRET", "value": "superSecretKey123" }
       ],
-      "essential": false,
+      "essential": true,
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
@@ -68,6 +70,7 @@ NEW_TASK_DEFINITION=$(cat <<JSON
 }
 JSON
 )
+
 
 # === 🪣 Register the new Task Definition ===
 echo ">>> Registering ECS Task Definition..."
