@@ -11,7 +11,7 @@ TASK_DEFINITION_FAMILY="devconnector-task"
 
 
 # === 🧱 Define ECS Task Definition JSON ===
-NEW_TASK_DEF=$(cat <<JSON
+read -r -d '' NEW_TASK_DEF <<EOF
 {
   "family": "devconnector-task",
   "networkMode": "bridge",
@@ -56,10 +56,7 @@ NEW_TASK_DEF=$(cat <<JSON
     }
   ]
 }
-JSON
-)
-
-
+EOF
 # === 🪣 Register the new Task Definition ===
 echo ">>> Registering ECS Task Definition..."
 aws ecs register-task-definition \
