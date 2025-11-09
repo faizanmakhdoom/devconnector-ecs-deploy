@@ -41,7 +41,7 @@ NEW_TASK_DEF=$(cat <<'JSON'
       ],
       "environment": [
         { "name": "PORT", "value": "5000" },
-        { "name": "MONGO_URI", "value": "mongodb://admin:admin123@54.234.64.158:27017/devconnector?authSource=admin" },
+        { "name": "MONGO_URI",   "value": "mongodb://10.0.0.86:27017/devconnector" },
         { "name": "JWT_SECRET", "value": "superSecretKey123" }
       ],
        "memoryReservation": 256,
