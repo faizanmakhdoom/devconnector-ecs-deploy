@@ -41,7 +41,6 @@ NEW_TASK_DEF=$(cat <<'JSON'
       ],
       "environment": [
         { "name": "PORT", "value": "5000" },
-        { "MONGO_URI=mongodb+srv://isavameshack_db_user:DgjsDX69G6U6CMH0@domain.ufzx0pz.mongodb.net/devcollab?retryWrites=true&w=majority&appName=DEVEOPS" },
         { "name": "JWT_SECRET", "value": "superSecretKey123" }
       ],
        "memoryReservation": 256,
