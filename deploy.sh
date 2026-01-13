@@ -18,7 +18,7 @@ NEW_TASK_DEF=$(cat <<'JSON'
   "containerDefinitions": [
     {
       "name": "devconnector-frontend",
-      "image": "623653226560.dkr.ecr.us-east-1.amazonaws.com/devconnector/frontend:latest",
+      "image": "656194817844.dkr.ecr.us-east-1.amazonaws.com/devconnector-frontend:latest",
       "portMappings": [
         { "containerPort": 80, "hostPort": 3000 }
       ],
@@ -29,19 +29,19 @@ NEW_TASK_DEF=$(cat <<'JSON'
         "options": {
           "awslogs-group": "/ecs/devconnector-task",
           "awslogs-region": "us-east-1",
-          "awslogs-stream-prefix": "frontend"
+          "awslogs-stream-prefix": "latest"
         }
       }
     },
     {
       "name": "devconnector-backend",
-      "image": "623653226560.dkr.ecr.us-east-1.amazonaws.com/devconnector/backend:latest",
+      "image": "656194817844.dkr.ecr.us-east-1.amazonaws.com/devconnector-backend:latest",
       "portMappings": [
         { "containerPort": 5000, "hostPort": 5000 }
       ],
       "environment": [
         { "name": "PORT", "value": "5000" },
-        { "name": "MONGO_URI",   "value": "mongodb://10.0.0.86:27017/devconnector" },
+        { "MONGO_URI=mongodb+srv://isavameshack_db_user:DgjsDX69G6U6CMH0@domain.ufzx0pz.mongodb.net/devcollab?retryWrites=true&w=majority&appName=DEVEOPS" },
         { "name": "JWT_SECRET", "value": "superSecretKey123" }
       ],
        "memoryReservation": 256,
@@ -51,7 +51,7 @@ NEW_TASK_DEF=$(cat <<'JSON'
         "options": {
           "awslogs-group": "/ecs/devconnector-task",
           "awslogs-region": "us-east-1",
-          "awslogs-stream-prefix": "backend"
+          "awslogs-stream-prefix": "latest"
         }
       }
     }
